@@ -4,22 +4,20 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 import streamlit as st
 
-# ---------------- DATA GENERATION ---------------- #
+"""###Data Loading"""
 
+# Generate sample IPL powerplay dataset
 np.random.seed(42)
-
 df = pd.DataFrame({
-    "powerplay_score": np.random.randint(20, 120, 1000),
-    "powerplay_wickets": np.random.randint(0, 6, 1000),
-    "result": np.random.randint(0, 2, 1000)
+    'powerplay_score': np.random.randint(20, 120, 1000),
+    'powerplay_wickets': np.random.randint(0, 6, 1000),
+    'result': np.random.randint(0, 2, 1000)
 })
 
-X = df[["powerplay_score", "powerplay_wickets"]]
-y = df["result"]
+X = df[['powerplay_score','powerplay_wickets']]
+y = df['result']
 
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
-)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
 model = LogisticRegression()
 model.fit(X_train, y_train)
@@ -32,6 +30,7 @@ st.write("Predict match result based on powerplay performance")
 
 st.markdown("---")
 
+# SLIDERS
 powerplay_score = st.slider(
     "Select Powerplay Score",
     min_value=0,
@@ -46,18 +45,13 @@ powerplay_wickets = st.slider(
     value=1
 )
 
-# ---------------- PREDICTION ---------------- #
-
 if st.button("Predict Result"):
 
-    input_data = pd.DataFrame(
-        [[powerplay_score, powerplay_wickets]],
-        columns=["powerplay_score", "powerplay_wickets"]
-    )
+    X_test = pd.DataFrame([[powerplay_score, powerplay_wickets]], columns=['powerplay_score', 'powerplay_wickets'])
 
-    prediction = model.predict(input_data)
+    y_pred = model.predict(X_test)
 
-    if prediction[0] == 1:
+    if y_pred[0] == 1:
         st.success("🏆 Prediction: Team will WIN")
     else:
         st.error("❌ Prediction: Team will LOSE")
